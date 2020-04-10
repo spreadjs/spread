@@ -1,6 +1,6 @@
 const Store = require('./index.js')
 
-let store = new Store();
+let store = new Store(null, {logger:{events:true}});
 
 //store.a = 1
 store.b = {};
