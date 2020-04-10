@@ -1,6 +1,13 @@
 # Distributed JavaScript Object
 
-DJSO is a local JavaScript datastructure, that is synced across instances.
+DJSO is a local JavaScript datastructure, that is instantly synced across instances.
+It can be used, when building distributed applications, that need local in-memory data for fast access.
+
+Why?
+
+* Use native JavaScript objects
+* Fast lookups
+* Simple usage
 
 ```
 const store = new Store();
