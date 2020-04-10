@@ -1,15 +1,12 @@
 var io = require('socket.io-client');
 
-var Store = function(conString, options)
+var Store = function(conString)
 {
-	this.logger = {
-		events: true,
-		internal:true
-	};
-
-	if(options.logger) this.logger = options.logger
 
 	this.path = [];
+	this.syncCompete = false;
+	this.conn = {};
+	this.id = Math.random();
 
 	this.validator = {
 	  get: (obj, prop) => {
@@ -21,7 +18,7 @@ var Store = function(conString, options)
 	    }
 	  },
 	  set: (obj, prop, value) => {
-	  	if(this.logger.internal) console.log('set', obj, prop)
+	  	 console.log('set', obj, prop)
 	  	this.path.push(prop);
 	    obj[prop] = value;
 	    this.set(this.path, value);
@@ -30,7 +27,7 @@ var Store = function(conString, options)
 	  },
 
 	  deleteProperty: (obj, prop, value) => {
-	    if(this.logger.internal) console.log('delete', obj, prop)
+	    console.log('delete', obj, prop)
 	  	this.path.push(prop);
 	    delete obj[prop];
 	    this.remove(this.path, value);
@@ -40,15 +37,14 @@ var Store = function(conString, options)
 	}
 
 	this.data = new Proxy({}, this.validator);
-	this.conn = {};
-	this.id = Math.random();
 
 	this.connect = function(conString)
 	{
 		this.conn = io.connect('http://localhost:3000')
 
 		this.conn.on('connect', () => {
-			if(this.logger.events) console.log('connected');
+			console.log('connected');
+			this.syncCompete = false;
 			this.conn.emit('requestSync', {sender:this.id});
 		})
 	}
@@ -57,23 +53,24 @@ var Store = function(conString, options)
 
 
 	this.conn.on('requestSync', data => {
-		if(this.logger.events) console.log('someone requested a Sync', data)
+		 console.log('someone requested a Sync, sending', this.data)
 		if(data.sender == this.id) return;
 		this.conn.emit('init', this.data);
 	})
 
 	this.conn.on('init', data => {
-		if(this.logger.events) console.log('got an init', data)
+		console.log('got an init', data)
 		this.data = data;
+		this.syncCompete  = true;
 	})
-
-
 
 
 	// react to remote events
 	this.conn.on('set', data => {
+		if(this.syncCompete)
 		if(data.sender == this.id) return;
-		if(this.logger.events) console.log('got set', data)
+		this.path = [];
+		console.log('got set', data)
 		var ref = this.data;
 		data.path.forEach(function(p, i){
 			if(i == data.path.length-1) return
@@ -82,13 +79,15 @@ var Store = function(conString, options)
 
 		ref[data.path[data.path.length-1]] = data.value;
 		
-		if(this.logger.internal) console.log('final', this.data);
+		 console.log('final', this.data);
 
 	})
 
 	this.conn.on('remove', data => {
+		if(this.syncCompete)
 		if(data.sender == this.id) return;
-		if(this.logger.events) console.log('got remove', data)
+		this.path = [];
+		console.log('got remove', data)
 		var ref = this.data;
 		data.path.forEach(function(p, i){
 			if(i == data.path.length-1) return
@@ -96,7 +95,7 @@ var Store = function(conString, options)
 		})
 		delete ref[data.path[data.path.length-1]]
 
-		if(this.logger.internal) console.log('final', this.data);
+		 console.log('final', this.data);
 	})
 
 
@@ -104,7 +103,8 @@ var Store = function(conString, options)
 
 	// broadcast events
 	this.set = function(path, value) {
-		if(this.logger.events) console.log('sending set', path, value);
+		if(this.syncCompete)
+		console.log('sending set', path, value);
 		this.conn.emit('set', {
 			sender: this.id,
 			path,
@@ -114,7 +114,8 @@ var Store = function(conString, options)
 
 
 	this.remove = function(path, value) {
-		if(this.logger.events) console.log('sending remove', path, value);
+		if(this.syncCompete)
+		 console.log('sending remove', path, value);
 		this.conn.emit('remove', {
 			sender: this.id,
 			path,
