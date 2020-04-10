@@ -49,7 +49,7 @@ node server.js
 
 ```javascript
 // initialize
-let store = new Store();
+let store = new Store('ws://your_server');
 
 // Set any properties on the storage object
 store.config = {};
