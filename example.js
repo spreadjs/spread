@@ -9,7 +9,13 @@ const readline = require('readline').createInterface({
 function newCommand(){
 	readline.question(`Command: `, (com) => {
   		console.log(` ${com}!`)
-  		eval(com);
+  		if(com == 'exit') process.exit(0)
+  		try {
+  			eval(com);
+  		} catch(e)
+  		{
+  			console.log('Invalid command');
+  		}
   		newCommand()
 	})
 }
