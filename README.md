@@ -61,7 +61,7 @@ store.config.array = ["one"];
 store.config.array.push("two");
 
 // Delete properties
-delete store.config.age;
+delete store.config.array;
 
 ```
 
@@ -79,11 +79,11 @@ Wen a new instance joins the group, it automatically requests the current state 
 
 1. Spin up the socket server:
 
-`node server.js`
+`node server/server.js`
 
 2. Start two or more example instances:
 
-`node example.js`
+`node playground/try.js`
 
 3. Make changes and see the results
 
