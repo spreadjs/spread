@@ -51,7 +51,7 @@ node server.js
 ### Use the client
 
 ```javascript
-// initialize
+// Initialize. All instances share the same websocket connection
 let store = new Store('ws://your_server');
 
 // Set any properties on the storage object
@@ -66,6 +66,12 @@ delete store.config.age;
 ```
 
 
+
+## How it works
+
+Technically the process is pretty simple. The Storage object is being monitored using a JS Proxy. Every change will instantly be emitted to the server, where is gets broadcasted to all connected instances. On each instance, the incoming operation is applied, keeping the storage object in sync.
+
+Wen a new instance joins the group, it automatically requests the current state of the storage object. Any other instance will then send a copy of the data object to the new instance.
 
 
 
