@@ -2,8 +2,7 @@
 
 ![djso](djso.png)
 
-DJSO is a local JavaScript datastructure, that is instantly synced across instances.
-It can be used, when building distributed applications, that need local in-memory data for fast access.
+DJSO is a local JavaScript datastructure, that is instantly synced across instances.It can be used, when building distributed applications, that need local in-memory data for fast access.
 
 ```javascript
 const store = new Store('ws://...'); 
