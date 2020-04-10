@@ -23,23 +23,46 @@ Why?
 
   
 
-## Get it
+## Get started
+
+Install:
 
 `npm install djso`
 
-or
+ or
 
-`<script src="djso.js" />`
+ `<script src="djso.js" />`
 
 
 
-## Get started
+## Usage
 
-1. Start the socket server
-   1. `node server.js`
+In order to sync your local data structure, spin up the built-in socket server. The internal communication is done via web sockets.
 
-2. initialise the client
-   1. `let store = new Store('ws://')`
+### Start the socket server
+
+```shell
+node server.js
+```
+
+### Use the client
+
+```javascript
+// initialize
+let store = new Store();
+
+// Set any properties on the storage object
+store.config = {};
+store.config.name = "Peter";
+store.config.array = ["one"];
+store.config.array.push("two");
+
+// Delete properties
+delete store.config.age;
+
+```
+
+
 
 
 
