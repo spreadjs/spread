@@ -12,13 +12,11 @@ io.sockets.on('connection', function (socket) {
 	    onevent.call(this, packet); 
 	};
 
-
     socket.on('*', function (event, data) {
     	console.log('d', event, data);
 	    socket.broadcast.emit(event, data);
 	});
 
 });
-
 
 server.listen(3000);

@@ -2,8 +2,38 @@ var io = require('socket.io-client');
 
 var Store = function(conString)
 {
+	this.path = [];
 
-	this.data = [];
+	this.validator = {
+	  get: (obj, prop) => {
+	    if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+	    	this.path.push(prop);
+	      return new Proxy(obj[prop], this.validator)
+	    } else {
+	      return obj[prop]
+	    }
+	  },
+	  set: (obj, prop, value) => {
+	  	console.log('set', obj, prop)
+	  	this.path.push(prop);
+	    obj[prop] = value;
+	    this.set(this.path, value);
+	    this.path = [];
+	    return true
+	  },
+
+	  deleteProperty: (obj, prop, value) => {
+	    
+	    console.log('delete', obj, prop)
+	  	this.path.push(prop);
+	    delete obj[prop];
+	    this.remove(this.path, value);
+	    this.path = [];
+	    return true
+	  }
+	}
+
+	this.data = new Proxy({}, this.validator);
 	this.conn = {};
 	this.id = Math.random();
 
@@ -15,30 +45,9 @@ var Store = function(conString)
 			console.log('connected');
 			this.conn.emit('requestSync', {sender:this.id});
 		})
-		
 	}
 
 	this.connect(conString);
-
-
-	// local operations
-	this._add = function(data)
-	{
-		this.data.push(data);
-	}
-
-	this._update = function(data)
-	{
-		this.data.forEach( d => {
-			if(JSON.stringify(d) == JSON.stringify(data)) d = data;
-		})
-	}
-
-	this._remove = function(data){
-		this.data.forEach((d,i) => {
-			if(JSON.stringify(d) == JSON.stringify(data)) this.data.splice(i,1);
-		})
-	}
 
 
 	this.conn.on('requestSync', data => {
@@ -53,47 +62,65 @@ var Store = function(conString)
 	})
 
 
-	// remote operation listeners
-	this.conn.on('add', data => {
-		if(data.sender == this.id) return;
-		this._add(data.payload);
-	})
 
-	this.conn.on('update', data => {
+
+	// react to remote events
+	this.conn.on('set', data => {
 		if(data.sender == this.id) return;
-		this._update(data.payload);
+		console.log('got set', data)
+		var ref = this.data;
+		data.path.forEach(function(p, i){
+			console.log('ref', ref, p)
+			if(i == data.path.length-1) return
+			ref = ref[p]
+		})
+
+		ref[data.path[data.path.length-1]] = data.value;
+		
+		console.log('final', this.data);
+
 	})
 
 	this.conn.on('remove', data => {
 		if(data.sender == this.id) return;
-		this._remove(data.payload)
+		
+		var ref = this.data;
+		data.path.forEach(function(p, i){
+			if(i == data.path.length-1) return
+			console.log('ref', ref, p)
+			ref = ref[p]
+		})
+		delete ref[data.path[data.path.length-1]]
+
+		console.log('final', this.data);
+
 	})
 
 
-	// natice operations
-	this.add = function(data) {
-		this._add(data);
-		this.conn.emit('add', {
+
+
+	// broadcast events
+	this.set = function(path, value) {
+		console.log('Send set', path, value);
+		this.conn.emit('set', {
 			sender: this.id,
-			payload: data
+			path,
+			value
 		});
 	}
 
-	this.update = function(data) {
-		this._update(data);
-		this.conn.emit('update', {
-			sender: this.id,
-			payload: data
-		});
-	}
 
-	this.remove = function(data) {
-		this._remove(data);
+	this.remove = function(path, value) {
 		this.conn.emit('remove', {
 			sender: this.id,
-			payload: data
+			path,
+			value
 		});
 	}
+
+
+
+	return this.data;
 }
 
 module.exports = Store;

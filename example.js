@@ -2,4 +2,12 @@ const Store = require('./index.js')
 
 let store = new Store();
 
-store.add({test:124})
+//store.a = 1
+store.b = {};
+store.b.e=1
+
+delete store.b.e;
+
+store.x = 5
+
+console.log(store.x)
