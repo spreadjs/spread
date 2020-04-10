@@ -27,11 +27,15 @@ Why?
 
 Install:
 
-`npm install djso`
+```shell
+npm i dsjo
+```
 
  or
 
- `<script src="djso.js" />`
+```html
+<script src="djso.js" />
+```
 
 
 
