@@ -4,11 +4,10 @@ DJSO is a local JavaScript datastructure, that is instantly synced across instan
 It can be used, when building distributed applications, that need local in-memory data for fast access.
 
 ```javascript
-const store = new Store('ws://...');
+const store = new Store('ws://...'); 
 
-store.hello = 'World'; // 'hello' will be set on all instances
-
-delete store.hello; // and will also be deleted on all instances
+store.hello = 'World'; 
+delete store.hello;
 ```
 
 Why?
