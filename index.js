@@ -20,7 +20,8 @@ var Store = function(conString)
 	    }
 	  },
 	  set: (obj, prop, value) => {
-	  	 console.log('set', obj, prop)
+	  	if(Array.isArray(obj) && prop == 'length') return true;
+	  	console.log('set', obj, prop)
 	  	this.path.push(prop);
 	    obj[prop] = value;
 	    this.set(this.path, value);
@@ -34,7 +35,7 @@ var Store = function(conString)
 	    delete obj[prop];
 	    this.remove(this.path, value);
 	    this.path = [];
-	    return true
+	    return true;
 	  }
 	}
 
