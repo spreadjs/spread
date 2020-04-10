@@ -8,7 +8,6 @@ const readline = require('readline').createInterface({
 
 function newCommand(){
 	readline.question(`Command: `, (com) => {
-  		console.log(` ${com}!`)
   		if(com == 'exit') process.exit(0)
   		try {
   			eval(com);
