@@ -1,17 +1,16 @@
 const Store = require('./index.js')
-
 let store = new Store(null);
 
-//store.a = 1
-store.b = {};
-store.b.e=1
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
 
-delete store.b.e;
-
-store.x = 5
-
-//store.arr = [];
-
-//store.arr.push(2);
-
-console.log(store.x)
+function newCommand(){
+	readline.question(`Command: `, (com) => {
+  		console.log(` ${com}!`)
+  		eval(com);
+  		newCommand()
+	})
+}
+newCommand();

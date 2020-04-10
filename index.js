@@ -8,6 +8,8 @@ var Store = function(conString)
 	this.conn = {};
 	this.id = Math.random();
 
+	console.log('My id:', this.id);
+
 	this.validator = {
 	  get: (obj, prop) => {
 	    if (typeof obj[prop] === 'object' && obj[prop] !== null) {
@@ -59,6 +61,7 @@ var Store = function(conString)
 	})
 
 	this.conn.on('init', data => {
+		if(data.sender == this.id) return;
 		console.log('got an init', data)
 		this.data = data;
 		this.syncCompete  = true;
@@ -78,9 +81,7 @@ var Store = function(conString)
 		})
 
 		ref[data.path[data.path.length-1]] = data.value;
-		
-		 console.log('final', this.data);
-
+		console.log('final', this.data);
 	})
 
 	this.conn.on('remove', data => {
@@ -94,11 +95,8 @@ var Store = function(conString)
 			ref = ref[p]
 		})
 		delete ref[data.path[data.path.length-1]]
-
-		 console.log('final', this.data);
+		console.log('final', this.data);
 	})
-
-
 
 
 	// broadcast events
@@ -122,7 +120,6 @@ var Store = function(conString)
 			value
 		});
 	}
-
 
 
 	return this.data;
