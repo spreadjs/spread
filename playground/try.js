@@ -1,5 +1,5 @@
-const Store = require('../index.js')
-let store = new Store(null);
+const Store = require('../spread.js')
+let store = new Store('ws://localhost:3001');
 
 const readline = require('readline').createInterface({
   input: process.stdin,
