@@ -1,4 +1,4 @@
-const Store = require('./index.js')
+const Store = require('../index.js')
 let store = new Store(null);
 
 const readline = require('readline').createInterface({

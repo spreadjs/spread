@@ -1,24 +1,26 @@
 {
-  "name": "djso",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "spreadjs-client",
+  "version": "0.0.1",
+  "description": "![djso](djso.png)",
+  "main": "spread.js",
   "dependencies": {
+    "http": "0.0.1-security",
     "readline": "^1.3.0",
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0"
+    "socket.io": "^2.5.0",
+    "socket.io-client": "^2.5.0",
+    "tinyify": "^4.0.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "build": "browserify -p tinyify spread.js -o spread-browser.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/4ty711/djso.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Marco Boelling",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/4ty711/djso/issues"
   },
